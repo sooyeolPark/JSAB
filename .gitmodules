@@ -1,5 +1,5 @@
 [submodule "JSAB-front"]
-	path = next-front
+	path = JSAB-front
 	url = https://git@github.com/sooyeolPark/JSAB-front.git
 	branch = master
 [submodule "JSAB-db"]
