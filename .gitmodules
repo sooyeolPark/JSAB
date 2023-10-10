@@ -1,0 +1,12 @@
+[submodule "JSAB-front"]
+	path = next-front
+	url = https://git@github.com/sooyeolPark/JSAB-front.git
+	branch = master
+[submodule "JSAB-db"]
+	path = JSAB-db
+	url = https://git@github.com/sooyeolPark/JSAB-db.git
+	branch = master
+[submodule "JSAB-api"]
+	path = JSAB-api
+	url = https://git@github.com/sooyeolPark/JSAB-api.git
+	branch = master

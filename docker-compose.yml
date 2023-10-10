@@ -1,0 +1,80 @@
+version: "3.8"
+services:
+  nginx-proxy:
+    container_name: "nginx-proxy"
+    user: "root"
+    image: nginx:latest
+    ports:
+      - "80:80"
+    restart: always
+    volumes:
+      - ./nginx-proxy/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - JSAB-front
+      - JSAB-api
+  JSAB-api:
+    container_name: JSAB-api
+    image: amazoncorretto:17.0.6-alpine #mac에서 에러가 난다면 CPU에 따라 17버전 다른 이미지를 사용
+    build:
+      context: ./JSAB-api/docker-setting
+      dockerfile: Dockerfile
+    volumes:
+      - ./JSAB-api/docker-setting/jar-path:/home/spring-api/jar-path
+    env_file:
+      - .env
+    environment:
+      DB_HOSTNAME: postgres
+      DB_PORT: 5432
+      DB_NAME: ${APP_DB_NAME}
+      DB_USERNAME: ${APP_DB_USER}
+      DB_PASSWORD: ${APP_DB_PWD}
+    restart: always
+    expose:
+      - 8080
+      - 5005
+    depends_on:
+      postgres:
+        condition: service_healthy
+  JSAB-db:
+    container_name: JSAB-db
+    image: postgres:15.4
+    build:
+      context: ./JSAB-db
+      dockerfile: Dockerfile
+    volumes:
+      - ./JSAB-db/postgresql/data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER} # 선택 속성으로 POSTGRES_PASSWORD와 함께 사용되며, POSTGRES_USER명으로 superuser가 생성됨(작성하지 않을 경우 postgres 이름으로 superuser 생성)
+      POSTGRES_PASSWORD: ${POSTGRES_PWD} # 필수 속성으로 postgreSQL의 superuser password(비어있거나 선언되지 않으면 안됨)
+      POSTGRES_DB: ${APP_DB_NAME}
+      APP_DB_USER: ${APP_DB_USER}
+      APP_DB_PWD: ${APP_DB_PWD}
+#    user: 컨테이너 유저 (설정하지 않으면 root)
+    expose:
+      - 5432
+    healthcheck:
+      test: pg_isready -d ${APP_DB_NAME}
+      interval: 5s
+      timeout: 5s
+      retries: 5
+#  JSAB-front:
+#    container_name: next-front
+#    image: node:18-alpine
+#    build:
+#      context: ./next-front
+#      dockerfile: Dockerfile
+#    env_file:
+#      - .env
+#    environment:
+#      ENV_VARIABLE: ${ENV_VARIABLE}
+#      NEXT_PUBLIC_ENV_VARIABLE: ${NEXT_PUBLIC_ENV_VARIABLE}
+#    volumes:
+#      - ./next-front/src:/app/src
+#      - ./next-front/public:/app/public
+#    restart: always
+#    expose:
+#      - 3000
+#    depends_on:
+#      - spring-api
