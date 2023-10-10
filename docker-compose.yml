@@ -1,40 +1,40 @@
 version: "3.8"
 services:
-  nginx-proxy:
-    container_name: "nginx-proxy"
-    user: "root"
-    image: nginx:latest
-    ports:
-      - "80:80"
-    restart: always
-    volumes:
-      - ./nginx-proxy/nginx.conf:/etc/nginx/nginx.conf
-    depends_on:
-      - JSAB-front
-      - JSAB-api
-  JSAB-api:
-    container_name: JSAB-api
-    image: amazoncorretto:17.0.6-alpine #mac에서 에러가 난다면 CPU에 따라 17버전 다른 이미지를 사용
-    build:
-      context: ./JSAB-api/docker-setting
-      dockerfile: Dockerfile
-    volumes:
-      - ./JSAB-api/docker-setting/jar-path:/home/spring-api/jar-path
-    env_file:
-      - .env
-    environment:
-      DB_HOSTNAME: postgres
-      DB_PORT: 5432
-      DB_NAME: ${APP_DB_NAME}
-      DB_USERNAME: ${APP_DB_USER}
-      DB_PASSWORD: ${APP_DB_PWD}
-    restart: always
-    expose:
-      - 8080
-      - 5005
-    depends_on:
-      postgres:
-        condition: service_healthy
+#  nginx-proxy:
+#    container_name: "nginx-proxy"
+#    user: "root"
+#    image: nginx:latest
+#    ports:
+#      - "80:80"
+#    restart: always
+#    volumes:
+#      - ./nginx-proxy/nginx.conf:/etc/nginx/nginx.conf
+#    depends_on:
+#      - JSAB-front
+#      - JSAB-api
+#  JSAB-api:
+#    container_name: JSAB-api
+#    image: amazoncorretto:17.0.6-alpine #mac에서 에러가 난다면 CPU에 따라 17버전 다른 이미지를 사용
+#    build:
+#      context: ./JSAB-api/docker-setting
+#      dockerfile: Dockerfile
+#    volumes:
+#      - ./JSAB-api/docker-setting/jar-path:/home/spring-api/jar-path
+#    env_file:
+#      - .env
+#    environment:
+#      DB_HOSTNAME: postgres
+#      DB_PORT: 5432
+#      DB_NAME: ${APP_DB_NAME}
+#      DB_USERNAME: ${APP_DB_USER}
+#      DB_PASSWORD: ${APP_DB_PWD}
+#    restart: always
+#    expose:
+#      - 8080
+#      - 5005
+#    depends_on:
+#      postgres:
+#        condition: service_healthy
   JSAB-db:
     container_name: JSAB-db
     image: postgres:15.4
